@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI ＆ 財經週報</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+:root {
+  --cream: #f7f4ee;
+  --cream-2: #f0ece3;
+  --cream-3: #e8e2d6;
+  --ink: #1a1510;
+  --ink-2: #3d3628;
+  --ink-3: #7a7060;
+  --ink-4: #b0a898;
+  --rule: rgba(26,21,16,0.1);
+  --rule-heavy: rgba(26,21,16,0.25);
+  --ai: #1a3a6e;
+  --ai-tint: #e8edf7;
+  --fin: #1a5c2e;
+  --fin-tint: #e8f2ec;
+  --accent: #c8451a;
+  --accent-tint: #fdf0ec;
+  --up: #1a5c2e;
+  --down: #c8451a;
+  --r: 6px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Source Serif 4', 'Noto Sans TC', Georgia, serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Masthead ── */
+.masthead {
+  border-bottom: 1px solid var(--rule-heavy);
+  background: var(--cream);
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(8px);
+}
+.masthead-top {
+  max-width: 1120px; margin: 0 auto;
+  padding: 16px 32px 12px;
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: end; gap: 16px;
+}
+.masthead-left {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--ink-3);
+  letter-spacing: .08em; text-transform: uppercase;
+  align-self: end;
+}
+.masthead-title {
+  text-align: center;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(24px, 4vw, 42px);
+  font-weight: 900; letter-spacing: -1px; line-height: 1;
+  white-space: nowrap;
+}
+.masthead-title .ai-word  { color: var(--ai); }
+.masthead-title .sep-word { color: var(--ink-3); font-weight: 700; font-size: .6em; vertical-align: middle; margin: 0 6px; }
+.masthead-title .fin-word { color: var(--fin); }
+.masthead-right {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--ink-3);
+  letter-spacing: .08em; text-align: right; align-self: end;
+}
+.masthead-rule {
+  max-width: 1120px; margin: 0 auto;
+  padding: 0 32px;
+  display: flex; align-items: center; gap: 0;
+}
+.mhr-line { flex: 1; height: 3px; background: var(--ink); }
+.mhr-thin { flex: 1; height: 1px; background: var(--rule-heavy); margin-top: 2px; }
+.masthead-tagline {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: .2em; text-transform: uppercase; color: var(--ink-3);
+  padding: 0 14px; white-space: nowrap;
+}
+.masthead-bottom-bar {
+  height: 1px; background: var(--rule-heavy);
+}
+
+/* ── Layout ── */
+.page {
+  max-width: 1120px; margin: 0 auto;
+  padding: 24px 32px 64px;
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  grid-template-rows: auto auto 1fr;
+  gap: 0 32px;
+}
+
+/* ── Action bar ── */
+.action-bar {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 0 18px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 20px;
+}
+.btn-all {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--ink); color: var(--cream);
+  border: none; padding: 9px 20px;
+  font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500;
+  cursor: pointer; border-radius: var(--r);
+  letter-spacing: .04em; transition: all .15s;
+}
+.btn-all:hover { background: var(--ink-2); }
+.btn-all:disabled { opacity: .45; cursor: not-allowed; }
+.btn-sm {
+  display: flex; align-items: center; gap: 6px;
+  border: 1px solid var(--rule-heavy); background: transparent;
+  color: var(--ink-3); padding: 7px 14px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  cursor: pointer; border-radius: var(--r); transition: all .15s;
+}
+.btn-sm.ai-btn:hover  { border-color: var(--ai);  color: var(--ai); }
+.btn-sm.fin-btn:hover { border-color: var(--fin); color: var(--fin); }
+.btn-sm:disabled { opacity: .4; cursor: not-allowed; }
+.btn-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .6; }
+.btn-dot.pulse { animation: pulse .8s ease-in-out infinite; }
+@keyframes pulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:.15;transform:scale(.5)}}
+
+/* ── Tab bar ── */
+.tab-bar {
+  grid-column: 1 / -1;
+  display: flex; border-bottom: 2px solid var(--ink);
+  margin-bottom: 20px; gap: 0;
+}
+.tab-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 22px 7px; font-family: 'DM Mono', monospace;
+  font-size: 12px; font-weight: 500; letter-spacing: .05em;
+  cursor: pointer; border: none; background: transparent;
+  color: var(--ink-3); border-bottom: 3px solid transparent;
+  margin-bottom: -2px; transition: all .15s; text-transform: uppercase;
+}
+.tab-btn:hover { color: var(--ink); }
+.tab-btn.active-ai  { color: var(--ai);  border-bottom-color: var(--ai); }
+.tab-btn.active-fin { color: var(--fin); border-bottom-color: var(--fin); }
+.tab-badge {
+  font-size: 9px; padding: 2px 6px; border-radius: 3px;
+  font-weight: 600; letter-spacing: .03em;
+}
+.tb-done    { background: var(--fin-tint); color: var(--fin); }
+.tb-loading { background: #fdf6e8; color: #a07010; }
+.tb-error   { background: var(--accent-tint); color: var(--accent); }
+
+/* ── Progress section (per-panel, inside panel) ── */
+.panel-progress {
+  display: none; margin-bottom: 12px;
+  background: var(--cream-2); border: 1px solid var(--rule);
+  border-radius: var(--r); padding: 12px 16px;
+}
+.panel-progress.visible { display: block; }
+.pp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.pp-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-3); }
+.pp-pct   { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ai); font-weight: 500; }
+.pp-fin   .pp-pct { color: var(--fin); }
+.pp-track { height: 3px; background: var(--cream-3); border-radius: 2px; overflow: hidden; }
+.pp-timer { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-4); margin-top: 5px; text-align: right; min-height: 14px; }
+.pp-fill  { height: 100%; width: 0%; border-radius: 2px; transition: width .4s cubic-bezier(.4,0,.2,1); }
+.pp-ai  .pp-fill { background: var(--ai); }
+.pp-fin .pp-fill { background: var(--fin); }
+
+/* ── Main + Sidebar ── */
+.main-col { grid-column: 1; }
+.side-col  { grid-column: 2; border-left: 1px solid var(--rule); padding-left: 28px; }
+
+/* ── Panel ── */
+.panel { display: none; }
+.panel.active { display: contents; }
+
+/* ── Panel header ── */
+.panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 0 12px; border-bottom: 1px solid var(--rule); margin-bottom: 4px;
+}
+.panel-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .1em; }
+.last-update-tag {
+  display: none; align-items: center; gap: 5px;
+  font-family: 'DM Mono', monospace; font-size: 10px; color: var(--fin);
+  background: var(--fin-tint); padding: 3px 9px; border-radius: 99px;
+}
+.last-update-tag.visible { display: flex; }
+.lut-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--fin); }
+
+/* ── Filter bar ── */
+.filter-bar { display: none; gap: 6px; flex-wrap: wrap; padding: 10px 0; border-bottom: 1px solid var(--rule); align-items: center; margin-bottom: 4px; }
+.filter-bar.visible { display: flex; }
+.filter-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-4); letter-spacing: .05em; }
+.chip { font-size: 10px; padding: 3px 10px; border: 1px solid var(--rule-heavy); border-radius: 99px; cursor: pointer; color: var(--ink-3); font-family: 'DM Mono', monospace; background: transparent; transition: all .15s; }
+.chip:hover { border-color: var(--ink-3); color: var(--ink-2); }
+.chip.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+.chip.ai-chip.active  { background: var(--ai);  border-color: var(--ai);  color: #fff; }
+.chip.fin-chip.active { background: var(--fin); border-color: var(--fin); color: #fff; }
+.filter-divider { width: 1px; height: 14px; background: var(--rule); }
+.filter-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-4); margin-left: auto; }
+
+/* ── Empty state ── */
+.empty-state { padding: 48px 0; text-align: center; }
+.empty-icon { font-size: 28px; margin-bottom: 12px; }
+.empty-title { font-size: 16px; font-weight: 600; color: var(--ink-3); margin-bottom: 6px; }
+.empty-sub { font-size: 13px; color: var(--ink-4); line-height: 1.6; }
+
+/* ── Skeleton ── */
+.loading-state { display: none; }
+.loading-state.active { display: block; }
+.sk-list { display: flex; flex-direction: column; gap: 0; }
+.sk-card { padding: 18px 0; border-bottom: 1px solid var(--rule); }
+.sk { background: var(--cream-3); border-radius: 3px; animation: sk 1.5s ease-in-out infinite; }
+.sk-t { height: 13px; width: 50%; margin-bottom: 10px; }
+.sk-b1 { height: 10px; width: 100%; margin-bottom: 5px; }
+.sk-b2 { height: 10px; width: 72%; }
+.sk-card:nth-child(2) .sk { animation-delay: .12s; }
+.sk-card:nth-child(3) .sk { animation-delay: .24s; }
+@keyframes sk{0%,100%{opacity:.35}50%{opacity:.75}}
+
+/* ── Digest ── */
+.digest { display: none; }
+.digest.active { display: block; }
+.digest-hero { padding: 18px 0 16px; border-bottom: 2px solid var(--ink); margin-bottom: 2px; }
+.digest-week { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 7px; }
+.digest-headline { font-family: 'Playfair Display', serif; font-size: clamp(18px, 2.5vw, 26px); font-weight: 700; line-height: 1.3; margin-bottom: 9px; letter-spacing: -.3px; }
+.digest-summary { font-size: 13px; color: var(--ink-2); line-height: 1.85; font-style: italic; }
+
+/* ── News cards ── */
+.news-list { display: flex; flex-direction: column; }
+.news-card {
+  padding: 16px 0; border-bottom: 1px solid var(--rule);
+  display: grid; grid-template-columns: 1fr 80px; gap: 0 16px;
+  transition: opacity .15s;
+}
+.news-card.hidden { display: none; }
+.news-card.featured {
+  background: var(--cream-2); margin: 8px -16px; padding: 18px 16px;
+  border: 1px solid var(--rule-heavy); border-radius: var(--r);
+  grid-template-columns: 1fr 80px;
+}
+.card-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 7px; flex-wrap: wrap; }
+.cat-pill {
+  font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: .08em;
+  padding: 2px 7px; border-radius: 3px;
+}
+.cat-模型 { background: var(--ai-tint); color: var(--ai); }
+.cat-工具 { background: var(--fin-tint); color: var(--fin); }
+.cat-研究 { background: #f0ebfa; color: #6030a0; }
+.cat-政策 { background: #fdf6e8; color: #a07010; }
+.cat-其他 { background: var(--cream-3); color: var(--ink-3); }
+.feat-pill { font-family: 'DM Mono', monospace; font-size: 9px; background: var(--accent-tint); color: var(--accent); padding: 2px 7px; border-radius: 3px; font-weight: 600; }
+.sent-pill { font-family: 'DM Mono', monospace; font-size: 9px; padding: 2px 7px; border-radius: 3px; font-weight: 500; }
+.sent-看多 { background: var(--fin-tint); color: var(--fin); }
+.sent-看空 { background: var(--accent-tint); color: var(--accent); }
+.sent-中性 { background: var(--cream-3); color: var(--ink-3); }
+.card-title { font-family: 'Source Serif 4', serif; font-size: 15px; font-weight: 600; line-height: 1.4; margin-bottom: 6px; }
+.news-card.featured .card-title { font-size: 17px; }
+.card-body  { font-size: 13px; color: var(--ink-2); line-height: 1.8; }
+.model-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 7px; }
+.model-tag  { font-family: 'DM Mono', monospace; font-size: 9px; background: var(--ai-tint); color: var(--ai); border: 1px solid rgba(26,58,110,.15); padding: 1px 7px; border-radius: 3px; cursor: pointer; transition: all .12s; }
+.model-tag:hover { background: var(--ai); color: #fff; }
+.source-link { display: inline-flex; align-items: center; gap: 3px; margin-top: 8px; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-4); text-decoration: none; transition: color .12s; border-bottom: 1px dashed var(--rule-heavy); }
+.source-link:hover { color: var(--ink-2); }
+.card-right { display: flex; flex-direction: column; align-items: flex-end; padding-top: 2px; gap: 6px; }
+.imp-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--ink-4); }
+.imp-bars { display: flex; gap: 3px; align-items: flex-end; height: 14px; }
+.imp-bar { width: 4px; border-radius: 1px; background: var(--cream-3); }
+.imp-bar.on { background: var(--accent); }
+.imp-bar:nth-child(1) { height: 6px; }
+.imp-bar:nth-child(2) { height: 10px; }
+.imp-bar:nth-child(3) { height: 14px; }
+
+/* ── Error ── */
+.error-state { display: none; padding: 36px 0; }
+.error-state.active { display: block; }
+.error-card { display: inline-block; background: var(--accent-tint); border: 1px solid rgba(200,69,26,.2); border-radius: var(--r); padding: 10px 16px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); margin-top: 8px; max-width: 100%; word-break: break-all; }
+.no-results { padding: 24px 0; text-align: center; color: var(--ink-4); font-size: 13px; display: none; }
+.no-results.visible { display: block; }
+.digest-footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; }
+.footer-note { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-4); }
+
+/* ── Sidebar ── */
+.side-section { margin-bottom: 28px; }
+.side-section-title {
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: .12em; color: var(--ink-3);
+  padding-bottom: 8px; border-bottom: 2px solid var(--ink); margin-bottom: 12px;
+}
+/* Summary card */
+.summary-card {
+  background: var(--cream-2); border: 1px solid var(--rule);
+  border-radius: var(--r); padding: 14px 16px; margin-bottom: 10px;
+}
+.summary-card-label {
+  font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .1em;
+  padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 9px;
+}
+.sc-ai  .summary-card-label { background: var(--ai-tint); color: var(--ai); }
+.sc-fin .summary-card-label { background: var(--fin-tint); color: var(--fin); }
+.summary-card-body {
+  font-size: 12.5px; color: var(--ink-2); line-height: 1.85;
+  font-family: 'Source Serif 4', serif;
+}
+.summary-card-ts {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--ink-4); margin-top: 9px;
+}
+.summary-empty {
+  font-size: 12px; color: var(--ink-4); font-style: italic;
+  font-family: 'Source Serif 4', serif; line-height: 1.6;
+}
+/* Skeleton for summary */
+.sk-summary { padding: 14px 16px; background: var(--cream-2); border: 1px solid var(--rule); border-radius: var(--r); margin-bottom: 10px; display: none; }
+.sk-summary.active { display: block; }
+
+/* About box */
+.about-box { font-size: 12px; color: var(--ink-4); line-height: 1.7; font-family: 'Source Serif 4', serif; font-style: italic; }
+.history-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 0; border-bottom: 1px solid var(--rule);
+  cursor: pointer; transition: opacity .15s;
+}
+.history-item:hover { opacity: .75; }
+.history-item.hidden { display: none; }
+.hi-week { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--ink); min-width: 80px; }
+.hi-type { font-family: 'DM Mono', monospace; font-size: 10px; padding: 2px 8px; border-radius: 3px; flex-shrink: 0; }
+.hi-type-ai  { background: var(--ai-tint); color: var(--ai); }
+.hi-type-fin { background: var(--fin-tint); color: var(--fin); }
+.hi-headline { font-size: 13px; font-weight: 500; color: var(--ink-2); flex: 1; }
+.hi-ts { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-4); margin-left: auto; white-space: nowrap; }
+.hi-arrow { color: var(--ink-4); font-size: 14px; }
+.about-box a { color: var(--ink-3); }
+
+@media(max-width:768px){
+  .page { grid-template-columns: 1fr; padding: 16px; }
+  .side-col { display: none; }
+  .masthead-top { grid-template-columns: 1fr; text-align: center; gap: 6px; }
+  .masthead-left, .masthead-right { display: none; }
+  .news-card { grid-template-columns: 1fr; }
+  .card-right { flex-direction: row; margin-top: 8px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Masthead -->
+<div class="masthead">
+  <div class="masthead-top">
+    <div class="masthead-left" id="mast-left">每週自動整理 · 繁體中文</div>
+    <div class="masthead-title">
+      <span class="ai-word">AI</span><span class="sep-word">&</span><span class="fin-word">財經</span>&nbsp;週報
+    </div>
+    <div class="masthead-right" id="mast-right"></div>
+  </div>
+  <div class="masthead-rule">
+    <div class="mhr-line"></div>
+    <div class="masthead-tagline">Technology · Finance · Weekly Digest</div>
+    <div class="mhr-line"></div>
+  </div>
+  <div class="masthead-bottom-bar"></div>
+</div>
+
+<div class="page">
+
+  <!-- Action bar -->
+  <div class="action-bar">
+    <button class="btn-all" id="btn-all" onclick="generateAll()">
+      <span class="btn-dot" id="dot-all"></span>
+      ⚡ 一鍵產生完整週報
+    </button>
+    <button class="btn-sm ai-btn" id="btn-ai-sm" onclick="generateAI()">
+      <span class="btn-dot" id="dot-ai"></span>AI 週報
+    </button>
+    <button class="btn-sm fin-btn" id="btn-fin-sm" onclick="generateFin()">
+      <span class="btn-dot" id="dot-fin"></span>財經週報
+    </button>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active-ai" id="tab-ai" onclick="switchTab('ai')">
+      AI 科技
+      <span class="tab-badge" id="ts-ai" style="display:none"></span>
+    </button>
+    <button class="tab-btn" id="tab-fin" onclick="switchTab('fin')">
+      股票財經
+      <span class="tab-badge" id="ts-fin" style="display:none"></span>
+    </button>
+    <button class="tab-btn" id="tab-history" onclick="switchTab('history')">
+      歷史週報
+      <span class="tab-badge" id="ts-history" style="display:none"></span>
+    </button>
+  </div>
+
+  <!-- ══ AI Panel ══ -->
+  <div class="panel active" id="panel-ai">
+
+    <!-- Main col -->
+    <div class="main-col">
+      <!-- Per-panel progress -->
+      <div class="panel-progress pp-ai" id="pp-ai">
+        <div class="pp-header">
+          <span class="pp-label" id="pp-ai-label">連線中...</span>
+          <span class="pp-pct" id="pp-ai-pct">0%</span>
+        </div>
+        <div class="pp-track"><div class="pp-fill" id="pp-ai-fill"></div></div>
+        <div class="pp-timer" id="pp-ai-timer"></div>
+      </div>
+
+      <div class="panel-header">
+        <span class="panel-label">AI 科技週報</span>
+        <div class="last-update-tag" id="ai-lut">
+          <span class="lut-dot"></span>
+          <span id="ai-lut-text"></span>
+        </div>
+      </div>
+
+      <div class="filter-bar" id="filter-ai">
+        <span class="filter-label">分類</span>
+        <button class="chip ai-chip active" data-type="cat" data-val="all">全部</button>
+        <button class="chip ai-chip" data-type="cat" data-val="模型">模型</button>
+        <button class="chip ai-chip" data-type="cat" data-val="工具">工具</button>
+        <button class="chip ai-chip" data-type="cat" data-val="研究">研究</button>
+        <button class="chip ai-chip" data-type="cat" data-val="政策">政策</button>
+        <div class="filter-divider"></div>
+        <span class="filter-label">模型</span>
+        <div id="model-chips" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+        <span class="filter-count" id="ai-count"></span>
+      </div>
+
+      <!-- Empty: only show when not done and not loading -->
+      <div class="empty-state" id="ai-empty">
+        <div class="empty-icon">🤖</div>
+        <div class="empty-title">AI 週報尚未產生</div>
+        <div class="empty-sub">點擊「一鍵產生完整週報」<br>或「AI 週報」按鈕</div>
+      </div>
+
+      <div class="loading-state" id="ai-loading">
+        <div class="sk-list">
+          <div class="sk-card"><div class="sk sk-t"></div><div class="sk sk-b1"></div><div class="sk sk-b2"></div></div>
+          <div class="sk-card"><div class="sk sk-t"></div><div class="sk sk-b1"></div><div class="sk sk-b2"></div></div>
+          <div class="sk-card"><div class="sk sk-t"></div><div class="sk sk-b1"></div><div class="sk sk-b2"></div></div>
+        </div>
+      </div>
+
+      <div class="digest" id="ai-digest">
+        <div class="digest-hero">
+          <div class="digest-week" id="ai-date"></div>
+          <div class="digest-headline" id="ai-headline"></div>
+          <div class="digest-summary" id="ai-summary"></div>
+        </div>
+        <div class="news-list" id="ai-list"></div>
+        <div class="no-results" id="ai-no-results">此篩選條件下無報導</div>
+        <div class="digest-footer">
+          <div class="footer-note">AI 週報 · Claude 自動整理</div>
+          <div class="footer-note" id="ai-footer"></div>
+        </div>
+      </div>
+
+      <div class="error-state" id="ai-error">
+        <div class="empty-title" style="color:var(--accent)">AI 週報產生失敗</div>
+        <div class="error-card" id="ai-error-msg"></div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="side-col">
+      <div class="side-section">
+        <div class="side-section-title">本週簡評</div>
+        <div class="sk-summary" id="ai-sum-sk">
+          <div class="sk sk-t" style="width:40%;margin-bottom:10px;"></div>
+          <div class="sk sk-b1" style="margin-bottom:5px;"></div>
+          <div class="sk sk-b1" style="margin-bottom:5px;"></div>
+          <div class="sk sk-b2"></div>
+        </div>
+        <div class="summary-card sc-ai" id="ai-summary-card" style="display:none">
+          <div class="summary-card-label">AI 科技</div>
+          <div class="summary-card-body" id="ai-sum-body"></div>
+          <div class="summary-card-ts" id="ai-sum-ts"></div>
+        </div>
+        <div class="summary-empty" id="ai-sum-empty">週報產生後，這裡將顯示本週 AI 大事的簡評摘要。</div>
+      </div>
+      <div class="side-section">
+        <div class="side-section-title">關於本報</div>
+        <div class="about-box">
+          每週自動搜尋最新資訊，由 Claude AI 整理為繁體中文週報。<br><br>
+          AI 科技版涵蓋模型、工具、研究、政策動態；財經版涵蓋總體經濟、Fed 動向、股市、匯率、原物料等國際趨勢。<br><br>
+          財經內容僅供參考，非投資建議。
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /panel-ai -->
+
+  <!-- ══ Fin Panel ══ -->
+  <div class="panel" id="panel-fin">
+
+    <div class="main-col">
+      <div class="panel-progress pp-fin" id="pp-fin">
+        <div class="pp-header">
+          <span class="pp-label" id="pp-fin-label">連線中...</span>
+          <span class="pp-pct pp-fin" id="pp-fin-pct">0%</span>
+        </div>
+        <div class="pp-track"><div class="pp-fill" id="pp-fin-fill"></div></div>
+        <div class="pp-timer" id="pp-fin-timer"></div>
+      </div>
+
+      <div class="panel-header">
+        <span class="panel-label">國際財經趨勢週報</span>
+        <div class="last-update-tag" id="fin-lut">
+          <span class="lut-dot"></span>
+          <span id="fin-lut-text"></span>
+        </div>
+      </div>
+
+      <div class="filter-bar" id="filter-fin">
+        <span class="filter-label">觀點</span>
+        <button class="chip fin-chip active" data-sent="all">全部</button>
+        <button class="chip fin-chip" data-sent="看多">📈 看多</button>
+        <button class="chip fin-chip" data-sent="看空">📉 看空</button>
+        <button class="chip fin-chip" data-sent="中性">⚖️ 中性</button>
+        <span class="filter-count" id="fin-count"></span>
+      </div>
+
+      <div class="empty-state" id="fin-empty">
+        <div class="empty-icon">📈</div>
+        <div class="empty-title">財經週報尚未產生</div>
+        <div class="empty-sub">點擊「一鍵產生完整週報」<br>或「財經週報」按鈕</div>
+      </div>
+
+      <div class="loading-state" id="fin-loading">
+        <div class="sk-list">
+          <div class="sk-card"><div class="sk sk-t"></div><div class="sk sk-b1"></div><div class="sk sk-b2"></div></div>
+          <div class="sk-card"><div class="sk sk-t"></div><div class="sk sk-b1"></div><div class="sk sk-b2"></div></div>
+          <div class="sk-card"><div class="sk sk-t"></div><div class="sk sk-b1"></div><div class="sk sk-b2"></div></div>
+        </div>
+      </div>
+
+      <div class="digest" id="fin-digest">
+        <div class="digest-hero">
+          <div class="digest-week" id="fin-date"></div>
+          <div class="digest-headline" id="fin-headline"></div>
+          <div class="digest-summary" id="fin-summary"></div>
+        </div>
+        <div class="news-list" id="fin-list"></div>
+        <div class="no-results" id="fin-no-results">此篩選條件下無報導</div>
+        <div class="digest-footer">
+          <div class="footer-note">財經週報 · Claude 自動整理 · 非投資建議</div>
+          <div class="footer-note" id="fin-footer"></div>
+        </div>
+      </div>
+
+      <div class="error-state" id="fin-error">
+        <div class="empty-title" style="color:var(--accent)">財經週報產生失敗</div>
+        <div class="error-card" id="fin-error-msg"></div>
+      </div>
+    </div>
+
+    <div class="side-col">
+      <div class="side-section">
+        <div class="side-section-title">本週簡評</div>
+        <div class="sk-summary" id="fin-sum-sk">
+          <div class="sk sk-t" style="width:40%;margin-bottom:10px;"></div>
+          <div class="sk sk-b1" style="margin-bottom:5px;"></div>
+          <div class="sk sk-b1" style="margin-bottom:5px;"></div>
+          <div class="sk sk-b2"></div>
+        </div>
+        <div class="summary-card sc-fin" id="fin-summary-card" style="display:none">
+          <div class="summary-card-label">股票財經</div>
+          <div class="summary-card-body" id="fin-sum-body"></div>
+          <div class="summary-card-ts" id="fin-sum-ts"></div>
+        </div>
+        <div class="summary-empty" id="fin-sum-empty">週報產生後，這裡將顯示本週國際財經趨勢的簡評摘要。</div>
+      </div>
+      <div class="side-section">
+        <div class="side-section-title">關於本報</div>
+        <div class="about-box">
+          財經版涵蓋 Fed 利率政策、美股三大指數、科技股走勢、油價與能源、美元匯率及重要經濟數據。<br><br>
+          所有內容由 AI 自動整理，僅供資訊參考，不構成任何投資建議。
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /panel-fin -->
+
+  <!-- ══ History Panel ══ -->
+  <div class="panel" id="panel-history">
+    <div class="main-col">
+      <div class="panel-header">
+        <span class="panel-label">歷史週報</span>
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--ink-3);">過去 90 天內的週報存檔</span>
+      </div>
+      <div class="empty-state" id="history-empty">
+        <div class="empty-icon">📂</div>
+        <div class="empty-title">尚無歷史週報</div>
+        <div class="empty-sub">產生週報後會自動存檔於此<br>可回顧過去任何一週的內容</div>
+      </div>
+      <div class="loading-state" id="history-loading">
+        <div class="sk-list">
+          <div class="sk-card"><div class="sk sk-t"></div><div class="sk sk-b1"></div></div>
+          <div class="sk-card"><div class="sk sk-t"></div><div class="sk sk-b1"></div></div>
+        </div>
+      </div>
+      <div id="history-content" style="display:none;">
+        <div class="filter-bar visible" style="margin-bottom:8px;">
+          <span class="filter-label">篩選</span>
+          <button class="chip ai-chip active" data-htype="all" onclick="filterHistory('all')">全部</button>
+          <button class="chip ai-chip" data-htype="ai" onclick="filterHistory('ai')">AI 科技</button>
+          <button class="chip fin-chip" data-htype="fin" onclick="filterHistory('fin')">財經</button>
+          <span class="filter-count" id="history-count"></span>
+        </div>
+        <div id="history-list"></div>
+      </div>
+      <!-- 閱讀面板 -->
+      <div id="history-reader" style="display:none;">
+        <div class="panel-header" style="margin-bottom:16px;">
+          <button onclick="closeReader()" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--ink-3);background:none;border:none;cursor:pointer;padding:0;">← 返回列表</button>
+          <span class="last-update-tag visible" id="reader-ts"><span class="lut-dot"></span><span id="reader-ts-text"></span></span>
+        </div>
+        <div class="digest-hero">
+          <div class="digest-week" id="reader-date"></div>
+          <div class="digest-headline" id="reader-headline"></div>
+          <div class="digest-summary" id="reader-summary"></div>
+        </div>
+        <div class="news-list" id="reader-list"></div>
+        <div class="digest-footer">
+          <div class="footer-note" id="reader-type-label"></div>
+          <div class="footer-note" id="reader-count"></div>
+        </div>
+      </div>
+    </div>
+    <div class="side-col">
+      <div class="side-section">
+        <div class="side-section-title">存檔說明</div>
+        <div class="about-box">
+          每次產生週報後自動存入 Cloudflare KV 資料庫，保存 90 天。<br><br>
+          點擊任一週的記錄可查看完整內容，包含當週所有報導與簡評摘要。
+        </div>
+      </div>
+    </div>
+  </div><!-- /panel-history -->
+
+</div><!-- /page -->
+
+<script>
+// API 透過 Cloudflare Worker 代理，Key 安全保管在後端
+const WORKER   = 'https://ai-weekly-proxy.zuricchen.workers.dev';
+const API_URL  = WORKER + '/api/generate';
+const HEADERS  = {'Content-Type':'application/json'};
+
+// ── Date ──
+const now = new Date();
+const wd  = ['日','一','二','三','四','五','六'];
+const dateStr   = `${now.getFullYear()} 年 ${now.getMonth()+1} 月 ${now.getDate()} 日（週${wd[now.getDay()]}）`;
+const wkStart   = new Date(now); wkStart.setDate(now.getDate()-now.getDay());
+const wkEnd     = new Date(wkStart); wkEnd.setDate(wkStart.getDate()+6);
+const fmt       = d => `${d.getMonth()+1}/${d.getDate()}`;
+const fmtTs     = d => `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+const weekRange = `${fmt(wkStart)}–${fmt(wkEnd)}`;
+function getWkNum(d){const s=new Date(d.getFullYear(),0,1);return Math.ceil(((d-s)/86400000+s.getDay()+1)/7);}
+document.getElementById('mast-right').textContent = `${dateStr} · 第 ${getWkNum(now)} 週`;
+
+// ── Tab ──
+let currentTab='ai';
+const _badge = {ai:{t:'',c:'',v:false}, fin:{t:'',c:'',v:false}};
+function switchTab(t){
+  currentTab=t;
+  ['ai','fin','history'].forEach(x=>{
+    document.getElementById(`panel-${x}`).classList.toggle('active',x===t);
+    const btn=document.getElementById(`tab-${x}`);
+    const activeClass = x==='ai'?' active-ai': x==='fin'?' active-fin':' active-ai';
+    btn.className='tab-btn'+(x===t?activeClass:'');
+  });
+  if(t==='history') loadHistory();
+}
+function setTabBadge(t,state,text){
+  const cls={done:'tb-done',loading:'tb-loading',error:'tb-error'}[state]||'';
+  _badge[t]={t:text,c:cls,v:true};
+  const el=document.getElementById(`ts-${t}`);
+  if(el){el.textContent=text;el.className=`tab-badge ${cls}`;el.style.display='';}
+}
+
+// ── Per-panel progress + countdown timer ──
+const _timers = {};  // sec -> {interval, startTs, estimate}
+
+function startTimer(sec, estimateSecs){
+  stopTimer(sec);
+  const timerEl = document.getElementById(`pp-${sec}-timer`);
+  const startTs = Date.now();
+  _timers[sec] = { startTs, estimate: estimateSecs };
+  _timers[sec].interval = setInterval(()=>{
+    const elapsed = (Date.now() - startTs) / 1000;
+    const remaining = Math.max(0, estimateSecs - elapsed);
+    if(!timerEl) return;
+    if(remaining <= 0){
+      timerEl.textContent = '即將完成...';
+    } else {
+      const m = Math.floor(remaining / 60);
+      const s = Math.ceil(remaining % 60);
+      timerEl.textContent = m > 0
+        ? `預計剩餘 ${m} 分 ${s} 秒`
+        : `預計剩餘 ${s} 秒`;
+    }
+  }, 500);
+}
+
+function stopTimer(sec){
+  if(_timers[sec]?.interval){ clearInterval(_timers[sec].interval); }
+  delete _timers[sec];
+  const timerEl = document.getElementById(`pp-${sec}-timer`);
+  if(timerEl) timerEl.textContent = '';
+}
+
+function setPP(sec, pct, label){
+  const pp    = document.getElementById(`pp-${sec}`);
+  const fill  = document.getElementById(`pp-${sec}-fill`);
+  const lbl   = document.getElementById(`pp-${sec}-label`);
+  const pctEl = document.getElementById(`pp-${sec}-pct`);
+  if(pct <= 0){ pp.classList.remove('visible'); stopTimer(sec); return; }
+  pp.classList.add('visible');
+  fill.style.width = pct + '%';
+  pctEl.textContent = pct + '%';
+  if(label) lbl.textContent = label;
+  if(pct >= 100){
+    stopTimer(sec);
+    const timerEl = document.getElementById(`pp-${sec}-timer`);
+    if(timerEl) timerEl.textContent = '完成！';
+    setTimeout(()=>{ pp.classList.remove('visible'); if(timerEl) timerEl.textContent=''; }, 1600);
+  }
+}
+
+// ── State helper ── (never show empty if digest exists)
+function showState(sec, state){
+  const ids={empty:`${sec}-empty`,loading:`${sec}-loading`,digest:`${sec}-digest`,error:`${sec}-error`};
+  Object.values(ids).forEach(id=>{
+    const el=document.getElementById(id);
+    el.style.display=''; el.classList.remove('active');
+  });
+  const el=document.getElementById(ids[state]);
+  if(el){ el.classList.add('active'); if(state==='digest') el.style.display='block'; }
+}
+
+// ── API call ──
+async function callAPI(prompt, onProgress){
+  onProgress(5,'連線中...');
+  const res=await fetch(API_URL,{method:'POST',headers:HEADERS,body:JSON.stringify({
+    model:'claude-sonnet-4-6', max_tokens:6000,
+    tools:[{type:'web_search_20250305',name:'web_search'}],
+    messages:[{role:'user',content:prompt}]
+  })});  // Worker 代理轉發到 Anthropic
+  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`HTTP ${res.status}`);}
+  onProgress(65,'整理內容中...');
+  const data=await res.json();
+  const blocks=data.content.filter(b=>b.type==='text');
+  const tb=blocks[blocks.length-1];
+  if(!tb||!tb.text.trim()) throw new Error('API 未回傳文字，請重試');
+  onProgress(85,'解析資料中...');
+  let raw=tb.text.trim().replace(/^```[a-z]*\s*/im,'').replace(/```\s*$/m,'').trim();
+  const s=raw.indexOf('{'), e2=raw.lastIndexOf('}');
+  if(s===-1||e2===-1||s>=e2) throw new Error('模型未回傳 JSON：'+raw.slice(0,80).replace(/\n/g,' '));
+  const js=raw.slice(s,e2+1);
+  try{return JSON.parse(js);}catch(e1){}
+  try{return JSON.parse(js.replace(/,\s*([}\]])/g,'$1').replace(/[\x00-\x1F\x7F]+/g,' '));}catch(e2x){}
+  try{return JSON.parse(js.replace(/"([^"\\]*(\\.[^"\\]*)*)"/g,m=>m.replace(/\n/g,'\\n')));}catch(e2b){}
+  throw new Error('JSON 解析失敗：'+String(e2b||'unknown').slice(0,60));
+}
+
+// ── One-click ──
+async function generateAll(){
+  const btn=document.getElementById('btn-all'),dot=document.getElementById('dot-all');
+  btn.disabled=true; dot.classList.add('pulse');
+  setTabBadge('ai','loading','產生中'); setTabBadge('fin','loading','等待中');
+  try{
+    await generateAI(true);
+    setTabBadge('fin','loading','產生中');
+    await generateFin(true);
+  }catch(e){}
+  finally{btn.disabled=false;dot.classList.remove('pulse');}
+}
+
+// ══════ AI ══════
+let aiItems=[],aiCat='all',aiModel='all';
+let aiDone=false;
+
+document.querySelectorAll('[data-type="cat"]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-type="cat"]').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); aiCat=b.dataset.val; applyAI();
+  });
+});
+function buildModelChips(items){
+  const models=new Set(); items.forEach(i=>(i.models||[]).forEach(m=>models.add(m)));
+  const c=document.getElementById('model-chips'); c.innerHTML='';
+  if(!models.size)return;
+  const all=document.createElement('button');
+  all.className='chip ai-chip active'; all.textContent='全部';
+  all.addEventListener('click',()=>setAIModel('all')); c.appendChild(all);
+  [...models].sort().forEach(m=>{
+    const b=document.createElement('button'); b.className='chip ai-chip'; b.textContent=m;
+    b.addEventListener('click',()=>setAIModel(m)); c.appendChild(b);
+  });
+}
+function setAIModel(v){
+  aiModel=v;
+  document.querySelectorAll('#model-chips .chip').forEach(c=>c.classList.toggle('active',c.textContent===(v==='all'?'全部':v)));
+  applyAI();
+}
+function applyAI(){
+  let v=0;
+  document.querySelectorAll('#ai-list .news-card').forEach(card=>{
+    const cm=aiCat==='all'||card.dataset.cat===aiCat;
+    const mm=aiModel==='all'||(card.dataset.models||'').split(',').includes(aiModel);
+    card.classList.toggle('hidden',!(cm&&mm)); if(cm&&mm)v++;
+  });
+  document.getElementById('ai-count').textContent=`${v}/${aiItems.length} 則`;
+  document.getElementById('ai-no-results').classList.toggle('visible',v===0);
+}
+function renderAI(items){
+  const list=document.getElementById('ai-list'); list.innerHTML='';
+  [...items].sort((a,b)=>(b.featured?1:0)-(a.featured?1:0)).forEach(item=>{
+    const card=document.createElement('div');
+    const cat=item.category||'其他'; const imp=item.importance||1;
+    card.className='news-card'+(item.featured?' featured':'');
+    card.dataset.cat=cat; card.dataset.models=(item.models||[]).join(',');
+    const bars=[1,2,3].map(i=>`<div class="imp-bar ${i<=imp?'on':''}"></div>`).join('');
+    const mHTML=(item.models||[]).length?`<div class="model-tags">${(item.models||[]).map(m=>`<span class="model-tag" onclick="setAIModel('${m}')">${m}</span>`).join('')}</div>`:'';
+    const src=item.source_url?`<a class="source-link" href="${item.source_url}" target="_blank" rel="noopener">↗ ${item.source_name||'原文'}</a>`:'';
+    card.innerHTML=`<div><div class="card-meta">${item.featured?'<span class="feat-pill">本週焦點</span>':''}<span class="cat-pill cat-${cat}">${cat}</span></div><div class="card-title">${item.title}</div><div class="card-body">${item.body}</div>${mHTML}${src}</div><div class="card-right"><div class="imp-label">${['','一般','重要','重大'][imp]}</div><div class="imp-bars">${bars}</div></div>`;
+    list.appendChild(card);
+  });
+  buildModelChips(items);
+  document.getElementById('ai-count').textContent=`${items.length} 則`;
+  document.getElementById('ai-footer').textContent=`共 ${items.length} 則`;
+}
+async function generateAI(silent=false){
+  if(aiDone){ if(!silent && currentTab!=='ai') switchTab('ai'); return; }
+  const btn=document.getElementById('btn-ai-sm'),dot=document.getElementById('dot-ai');
+  btn.disabled=true; dot.classList.add('pulse');
+  aiCat='all'; aiModel='all';
+  document.querySelectorAll('[data-type="cat"]').forEach(b=>b.classList.toggle('active',b.dataset.val==='all'));
+  showState('ai','loading');
+  startTimer('ai', 35);  // AI 週報預計約 35 秒
+  // show summary skeleton
+  document.getElementById('ai-sum-sk').classList.add('active');
+  document.getElementById('ai-sum-empty').style.display='none';
+
+  const prompt=`你是 AI 產業週報編輯。今天是 ${dateStr}，請搜尋整理本週（${weekRange}）最重要的 AI 大事。
+只輸出一個 JSON 物件，不加說明或 markdown：
+{"headline":"主標題20字內","summary":"概況80字繁體中文","digest":"本週 AI 大事的簡評摘要，150字以內，繁體中文，語氣簡練有觀點，適合側欄閱讀","items":[{"title":"標題15字內","category":"模型 or 工具 or 研究 or 政策 or 其他","body":"摘要70字繁體中文","models":["GPT-4o"],"source_name":"來源","source_url":"https://...","importance":2,"featured":false}]}
+規則：6-8則，全繁體中文，models填具體模型名稱，importance 1-3，只有1則featured:true`;
+
+  try{
+    const p=await callAPI(prompt, (pct,lbl)=>setPP('ai',pct,lbl));
+    aiItems=p.items||[];
+    document.getElementById('ai-date').textContent=`${weekRange} · 第${getWkNum(now)}週 · ${dateStr}`;
+    document.getElementById('ai-headline').textContent=p.headline||'本週 AI 大事';
+    document.getElementById('ai-summary').textContent=p.summary||'';
+    renderAI(aiItems);
+    document.getElementById('filter-ai').classList.add('visible');
+    const ts=fmtTs(new Date());
+    document.getElementById('ai-lut-text').textContent=`上次更新 ${ts}`;
+    document.getElementById('ai-lut').classList.add('visible');
+    showState('ai','digest');
+    stopTimer('ai'); setPP('ai',100,'完成');
+    setTabBadge('ai','done','已更新');
+    aiDone=true;
+    saveReport('ai', p, weekRange);  // 自動存檔
+    // Summary card
+    document.getElementById('ai-sum-sk').classList.remove('active');
+    document.getElementById('ai-sum-body').textContent=p.digest||'本週 AI 動態豐富，詳見各則報導。';
+    document.getElementById('ai-sum-ts').textContent=`更新於 ${ts}`;
+    document.getElementById('ai-summary-card').style.display='block';
+    document.getElementById('ai-sum-empty').style.display='none';
+  }catch(e){
+    document.getElementById('ai-error-msg').textContent=e.message;
+    showState('ai','error'); setTabBadge('ai','error','失敗');
+    stopTimer('ai'); setPP('ai',0,'');
+    document.getElementById('ai-sum-sk').classList.remove('active');
+    document.getElementById('ai-sum-empty').style.display='';
+    if(!silent) throw e;
+  }finally{btn.disabled=false;dot.classList.remove('pulse');}
+}
+
+// ══════ FINANCE ══════
+let finItems=[],finSent='all';
+let finDone=false;
+
+document.querySelectorAll('[data-sent]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-sent]').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); finSent=b.dataset.sent; applyFin();
+  });
+});
+function applyFin(){
+  let v=0;
+  document.querySelectorAll('#fin-list .news-card').forEach(card=>{
+    const sm=finSent==='all'||card.dataset.sent===finSent;
+    card.classList.toggle('hidden',!sm); if(sm)v++;
+  });
+  document.getElementById('fin-count').textContent=`${v}/${finItems.length} 則`;
+  document.getElementById('fin-no-results').classList.toggle('visible',v===0);
+}
+function renderFin(items){
+  const list=document.getElementById('fin-list'); list.innerHTML='';
+  [...items].sort((a,b)=>(b.featured?1:0)-(a.featured?1:0)).forEach(item=>{
+    const card=document.createElement('div');
+    const sent=item.sentiment||'中性'; const imp=item.importance||1;
+    card.className='news-card'+(item.featured?' featured':'');
+    card.dataset.sent=sent;
+    const bars=[1,2,3].map(i=>`<div class="imp-bar ${i<=imp?'on':''}"></div>`).join('');
+    const src=item.source_url?`<a class="source-link" href="${item.source_url}" target="_blank" rel="noopener">↗ ${item.source_name||'原文'}</a>`:'';
+    const sentLabel={看多:'📈 看多',看空:'📉 看空',中性:'⚖️ 中性'}[sent]||sent;
+    card.innerHTML=`<div><div class="card-meta">${item.featured?'<span class="feat-pill">本週焦點</span>':''}<span class="sent-pill sent-${sent}">${sentLabel}</span></div><div class="card-title">${item.title}</div><div class="card-body">${item.body}</div>${src}</div><div class="card-right"><div class="imp-label">${['','一般','重要','重大'][imp]}</div><div class="imp-bars">${bars}</div></div>`;
+    list.appendChild(card);
+  });
+  document.getElementById('fin-count').textContent=`${items.length} 則`;
+  document.getElementById('fin-footer').textContent=`共 ${items.length} 則`;
+}
+async function generateFin(silent=false){
+  if(finDone){ if(!silent && currentTab!=='fin') switchTab('fin'); return; }
+  const btn=document.getElementById('btn-fin-sm'),dot=document.getElementById('dot-fin');
+  btn.disabled=true; dot.classList.add('pulse');
+  finSent='all';
+  document.querySelectorAll('[data-sent]').forEach(b=>b.classList.toggle('active',b.dataset.sent==='all'));
+  showState('fin','loading');
+  startTimer('fin', 55);  // 財經週報預計約 55 秒
+  document.getElementById('fin-sum-sk').classList.add('active');
+  document.getElementById('fin-sum-empty').style.display='none';
+
+  const prompt=[
+    `你是國際財經週報編輯。今天是 ${dateStr}，請搜尋本週（${weekRange}）國際財經大事。`,
+    `搜尋重點：Fed 利率政策動向、美股三大指數表現、科技股趨勢、油價能源市場、美元指數主要匯率、重要經濟數據（CPI/非農/GDP等）、全球市場重要事件。`,
+    `只輸出一個 JSON 物件，禁止加說明文字或 markdown：`,
+    `{"headline":"財經週報主標題20字內","summary":"本週市場概況80字繁體中文","digest":"本週國際財經趨勢的簡評摘要，150字以內，繁體中文，語氣簡練有觀點，適合側欄閱讀","items":[{"title":"標題15字內","body":"摘要70字繁體中文","sentiment":"看多","source_name":"Bloomberg","source_url":"https://bloomberg.com/example","importance":2,"featured":true}]}`,
+    `規則：5-7則，涵蓋總經/股市/匯率/原物料等面向，sentiment只能是看多/看空/中性，只有1則featured:true，source_url必須是真實https網址，全部繁體中文`
+  ].join('\n');
+
+  try{
+    const p=await callAPI(prompt,(pct,lbl)=>setPP('fin',pct,lbl));
+    finItems=p.items||[];
+    document.getElementById('fin-date').textContent=`${weekRange} · 第${getWkNum(now)}週 · ${dateStr}`;
+    document.getElementById('fin-headline').textContent=p.headline||'本週財經大事';
+    document.getElementById('fin-summary').textContent=p.summary||'';
+    renderFin(finItems);
+    document.getElementById('filter-fin').classList.add('visible');
+    const ts=fmtTs(new Date());
+    document.getElementById('fin-lut-text').textContent=`上次更新 ${ts}`;
+    document.getElementById('fin-lut').classList.add('visible');
+    showState('fin','digest');
+    stopTimer('fin'); setPP('fin',100,'完成');
+    setTabBadge('fin','done','已更新');
+    finDone=true;
+    saveReport('fin', p, weekRange);  // 自動存檔
+    document.getElementById('fin-sum-sk').classList.remove('active');
+    document.getElementById('fin-sum-body').textContent=p.digest||'本週國際財經動態詳見各則報導。';
+    document.getElementById('fin-sum-ts').textContent=`更新於 ${ts}`;
+    document.getElementById('fin-summary-card').style.display='block';
+    document.getElementById('fin-sum-empty').style.display='none';
+  }catch(e){
+    document.getElementById('fin-error-msg').textContent=e.message;
+    showState('fin','error'); setTabBadge('fin','error','失敗');
+    stopTimer('fin'); setPP('fin',0,'');
+    document.getElementById('fin-sum-sk').classList.remove('active');
+    document.getElementById('fin-sum-empty').style.display='';
+    if(!silent) throw e;
+  }finally{btn.disabled=false;dot.classList.remove('pulse');}
+}
+
+// ══════════════════════════════════════════════════
+//  存檔 & 歷史週報
+// ══════════════════════════════════════════════════
+// 計算週次 key，如 2025-W14
+function getWeekKey(d){
+  const s=new Date(d.getFullYear(),0,1);
+  const wn=Math.ceil(((d-s)/86400000+s.getDay()+1)/7);
+  return `${d.getFullYear()}-W${String(wn).padStart(2,'0')}`;
+}
+
+// 自動儲存週報到 KV
+async function saveReport(type, data, range){
+  try{
+    const weekKey = getWeekKey(new Date());
+    await fetch(WORKER+'/api/save',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ type, data, weekKey })
+    });
+  } catch(e){ console.warn('存檔失敗（不影響使用）:', e.message); }
+}
+
+// ── 歷史清單 ──
+let historyData = [];
+let historyFilter = 'all';
+let historyLoaded = false;
+
+async function loadHistory(){
+  if(historyLoaded){ renderHistoryList(); return; }
+  showHistoryState('loading');
+  try{
+    const res = await fetch(WORKER+'/api/history');
+    const { keys } = await res.json();
+    // 取得每筆的基本資訊
+    historyData = [];
+    for(const key of keys.slice(0,40)){  // 最多顯示 40 筆
+      try{
+        const r = await fetch(WORKER+'/api/history/'+encodeURIComponent(key));
+        const record = await r.json();
+        historyData.push({ key, ...record });
+      } catch(e){}
+    }
+    historyLoaded = true;
+    if(historyData.length === 0){
+      showHistoryState('empty');
+    } else {
+      renderHistoryList();
+      showHistoryState('list');
+    }
+  } catch(e){
+    showHistoryState('empty');
+  }
+}
+
+function showHistoryState(state){
+  document.getElementById('history-empty').style.display   = state==='empty'  ? '' : 'none';
+  document.getElementById('history-loading').style.display = state==='loading' ? 'block' : 'none';
+  document.getElementById('history-content').style.display = state==='list'   ? 'block' : 'none';
+  document.getElementById('history-reader').style.display  = state==='reader' ? 'block' : 'none';
+  document.getElementById('history-loading').classList.toggle('active', state==='loading');
+}
+
+function filterHistory(type){
+  historyFilter = type;
+  document.querySelectorAll('[data-htype]').forEach(b=>b.classList.toggle('active', b.dataset.htype===type));
+  renderHistoryList();
+}
+
+function renderHistoryList(){
+  const list = document.getElementById('history-list');
+  list.innerHTML = '';
+  const filtered = historyFilter==='all'
+    ? historyData
+    : historyData.filter(r=>r.type===historyFilter);
+
+  document.getElementById('history-count').textContent = `${filtered.length} 筆`;
+
+  if(filtered.length===0){
+    list.innerHTML = '<div style="padding:24px 0;text-align:center;color:var(--ink-4);font-size:13px;">此分類暫無存檔</div>';
+    return;
+  }
+
+  filtered.forEach(record => {
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    const typeLabel = record.type==='ai' ? 'AI 科技' : '財經';
+    const typeCls   = record.type==='ai' ? 'hi-type-ai' : 'hi-type-fin';
+    const headline  = record.data?.headline || '（無標題）';
+    const savedAt   = record.savedAt ? record.savedAt.slice(0,10) : '';
+    div.innerHTML = `
+      <div class="hi-week">${record.weekKey||''}</div>
+      <span class="hi-type ${typeCls}">${typeLabel}</span>
+      <div class="hi-headline">${headline}</div>
+      <div class="hi-ts">${savedAt}</div>
+      <div class="hi-arrow">›</div>`;
+    div.addEventListener('click', ()=>openReader(record));
+    list.appendChild(div);
+  });
+}
+
+function openReader(record){
+  showHistoryState('reader');
+  const d = record.data || {};
+  const typeLabel = record.type==='ai' ? 'AI 科技週報' : '國際財經趨勢週報';
+  document.getElementById('reader-ts-text').textContent = `存檔於 ${(record.savedAt||'').slice(0,10)}`;
+  document.getElementById('reader-date').textContent    = `${record.weekKey} · ${typeLabel}`;
+  document.getElementById('reader-headline').textContent = d.headline||'';
+  document.getElementById('reader-summary').textContent  = d.summary||'';
+  document.getElementById('reader-type-label').textContent = typeLabel;
+
+  const items = d.items || [];
+  const readerList = document.getElementById('reader-list');
+  readerList.innerHTML = '';
+  document.getElementById('reader-count').textContent = `共 ${items.length} 則`;
+
+  const sorted = [...items].sort((a,b)=>(b.featured?1:0)-(a.featured?1:0));
+  sorted.forEach(item=>{
+    const card = document.createElement('div');
+    const imp = item.importance||1;
+    const bars = [1,2,3].map(i=>`<div class="imp-bar ${i<=imp?'on':''}"></div>`).join('');
+    const isAI = record.type==='ai';
+    const catOrSent = isAI
+      ? `<span class="cat-pill cat-${item.category||'其他'}">${item.category||'其他'}</span>`
+      : `<span class="sent-pill sent-${item.sentiment||'中性'}">${{看多:'📈 看多',看空:'📉 看空',中性:'⚖️ 中性'}[item.sentiment||'中性']}</span>`;
+    const src = item.source_url
+      ? `<a class="source-link" href="${item.source_url}" target="_blank" rel="noopener">↗ ${item.source_name||'原文'}</a>` : '';
+    const mTags = (item.models||[]).length
+      ? `<div class="model-tags">${(item.models||[]).map(m=>`<span class="model-tag">${m}</span>`).join('')}</div>` : '';
+    card.className = 'news-card'+(item.featured?' featured':'');
+    card.innerHTML = `<div><div class="card-meta">${item.featured?'<span class="feat-pill">本週焦點</span>':''}${catOrSent}</div><div class="card-title">${item.title}</div><div class="card-body">${item.body}</div>${mTags}${src}</div><div class="card-right"><div class="imp-label">${['','一般','重要','重大'][imp]}</div><div class="imp-bars">${bars}</div></div>`;
+    readerList.appendChild(card);
+  });
+}
+
+function closeReader(){
+  showHistoryState('list');
+  renderHistoryList();
+}
+</script>
+</body>
+</html>
